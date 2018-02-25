@@ -35,8 +35,13 @@ class RowStore {
             row.active = active;
         }
     }
-    add(text: string, active?: boolean) {
+    @action add(text: string, active?: boolean) {
         this.rows.push(new TableRow(text, active || this.allSelected || false));
+    }
+    @action remove(row: TableRow) {
+        const ix = this.rows.indexOf(row);
+        if (ix !== -1)
+            this.rows.splice(ix, 1);
     }
 }
 
@@ -56,12 +61,17 @@ class TableRow {
 }
 
 @observer
-class RowComponent extends React.Component<{ row: TableRow }, {}> {
+class RowComponent extends React.Component<{ row: TableRow, onDelete: (row: TableRow) => void}, {}> {
+    @action.bound onDelete(ev: React.MouseEvent<HTMLElement>) {
+        this.props.onDelete(this.props.row);
+        ev.stopPropagation();
+    }
     render() {
         const row = this.props.row;
         return <tr style={{cursor:"pointer"}} onClick={row.toggle}>
             <td><FontAwesomeIcon icon={row.active ? faCheckSquare : faSquare} /></td>
             <td>{row.text}</td>
+            <td><a className="delete" onClick={this.onDelete} /></td>
         </tr>;
     }
 }
@@ -94,6 +104,9 @@ class RowForm extends React.Component<{ rowStore?: RowStore }, {}> {
 @observer
 export default class Main extends React.Component<{}, {}> {
     readonly store = new RowStore();
+    @action.bound removeRow(row: TableRow) {
+        this.store.remove(row);
+    }
     render() {
         let allIcon: IconDefinition;
         switch (this.store.allSelected) {
@@ -114,13 +127,14 @@ export default class Main extends React.Component<{}, {}> {
                         <thead>
                             <tr>
                                 <th onClick={this.store.toggleAllSelected} style={{ width: "1px", cursor: "pointer" }}>
-                                    <FontAwesomeIcon icon={allIcon} />
+                                    <FontAwesomeIcon icon={allIcon} className={this.store.length === 0 ? "has-text-grey-light" : ""} />
                                 </th>
                                 <th>Name</th>
+                                <th style={{ width: "1px" }} />
                             </tr>
                         </thead>
                         <tbody>{
-                            this.store.rows.map(r => <RowComponent key={r.id} row={r} />)
+                            this.store.rows.map(r => <RowComponent key={r.id} row={r} onDelete={this.removeRow} />)
                         }</tbody>
                     </table>
                     <RowForm />
