@@ -6,6 +6,12 @@ import { faCheckSquare, faSquare } from "@fortawesome/fontawesome-free-regular";
 
 class RowStore {
     @observable readonly rows: TableRow[] = [];
+    @computed get length() {
+        return this.rows.length;
+    }
+    @computed get selectedLength() {
+        return this.rows.reduce((s, r) => s += r.active ? 1 : 0, 0);
+    }
     add(text: string, active: boolean = false) {
         this.rows.push(new TableRow(text, active));
     }
@@ -86,12 +92,7 @@ export default class Main extends React.Component<{}, {}> {
                         }</tbody>
                     </table>
                     <RowForm />
-                    <div>{
-                        this.store.rows.reduce((s, r) => s += r.active ? 1 : 0, 0)
-                    } of {
-                        this.store.rows.length
-                    } selected
-                    </div>
+                    <div>{this.store.selectedLength} of {this.store.length} selected</div>
                 </div>
             </section>
         </Provider>;
