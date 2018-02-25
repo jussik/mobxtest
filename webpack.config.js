@@ -5,7 +5,11 @@ module.exports = {
     },
     module: {
         rules: [
-            { test: /\.tsx?$/, loader: "ts-loader" }
+            { test: /\.tsx?$/, loader: "ts-loader" },
+            {
+                test: /\.s[ac]ss$/,
+                use: [{ loader: "style-loader" }, { loader: "css-loader" }, { loader: "sass-loader" }]
+            }
         ]
     },
     devtool: "source-map",
