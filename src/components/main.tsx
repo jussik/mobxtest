@@ -2,18 +2,41 @@ import * as React from "react";
 import { action, observable, computed } from "mobx";
 import { observer, Provider, inject } from "mobx-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckSquare, faSquare } from "@fortawesome/fontawesome-free-regular";
+import { IconDefinition, faCheckSquare, faMinusSquare, faSquare } from "@fortawesome/fontawesome-free-regular";
 
 class RowStore {
     @observable readonly rows: TableRow[] = [];
-    @computed get length() {
+    @computed get length(): number {
         return this.rows.length;
     }
-    @computed get selectedLength() {
+    @computed get selectedLength(): number {
         return this.rows.reduce((s, r) => s += r.active ? 1 : 0, 0);
     }
-    add(text: string, active: boolean = false) {
-        this.rows.push(new TableRow(text, active));
+    @computed get allSelected(): boolean | null {
+        if (this.rows.length === 0)
+            return false;
+
+        let some = false, all = true;
+        for (let row of this.rows) {
+            if (row.active) {
+                some = true;
+            } else {
+                all = false;
+            }
+        }
+        if (all)
+            return true;
+
+        return some ? null : false;
+    }
+    @action.bound toggleAllSelected() {
+        const active = !this.allSelected;
+        for (let row of this.rows) {
+            row.active = active;
+        }
+    }
+    add(text: string, active?: boolean) {
+        this.rows.push(new TableRow(text, active || this.allSelected || false));
     }
 }
 
@@ -72,6 +95,13 @@ class RowForm extends React.Component<{ rowStore?: RowStore }, {}> {
 export default class Main extends React.Component<{}, {}> {
     readonly store = new RowStore();
     render() {
+        let allIcon: IconDefinition;
+        switch (this.store.allSelected) {
+            case true: allIcon = faCheckSquare; break;
+            case false: allIcon = faSquare; break;
+            default: allIcon = faMinusSquare; break;
+        }
+
         return <Provider rowStore={this.store}>
             <section className="section">
                 <div className="tabs">
@@ -83,7 +113,9 @@ export default class Main extends React.Component<{}, {}> {
                     <table className="table is-fullwidth is-striped is-hoverable">
                         <thead>
                             <tr>
-                                <th style={{ width: "28px" }} />
+                                <th onClick={this.store.toggleAllSelected} style={{ width: "1px", cursor: "pointer" }}>
+                                    <FontAwesomeIcon icon={allIcon} />
+                                </th>
                                 <th>Name</th>
                             </tr>
                         </thead>
