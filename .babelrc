@@ -1,0 +1,9 @@
+{
+  "presets": [[
+    "env",
+    {
+      "modules": false,
+      "targets": { "browsers": "defaults, ie >= 11" }
+    }
+  ]]
+}
