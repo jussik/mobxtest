@@ -6,9 +6,9 @@ import { useStrict } from "mobx";
 
 useStrict(true);
 
-import Main from "./components/main";
+import MainPage from "./components/MainPage";
 
 ReactDOM.render(
-    <Main />,
+    <MainPage />,
     document.getElementById("main")
 );
