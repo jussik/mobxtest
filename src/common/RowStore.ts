@@ -3,8 +3,22 @@ import { action, observable, computed } from "mobx";
 
 import { TableRow } from "./TableRow";
 
+const localStorageKey = "mobxtest.rows";
+
 export class RowStore {
-    @observable readonly rows: TableRow[] = [];
+    @observable readonly rows: TableRow[];
+    constructor() {
+        let rows: TableRow[] | null = null;
+        if (window.localStorage) {
+            try {
+                const d = window.localStorage.getItem(localStorageKey);
+                if (d) {
+                    rows = (JSON.parse(d) as string[]).map(r => new TableRow(r));
+                }
+            } catch(_) { }
+        }
+        this.rows = rows || [];
+    }
     @computed get length(): number {
         return this.rows.length;
     }
@@ -36,10 +50,17 @@ export class RowStore {
     }
     @action add(text: string, active?: boolean) {
         this.rows.push(new TableRow(text, active || this.allSelected || false));
+        this.updateStorage();
     }
     @action remove(row: TableRow) {
         const ix = this.rows.indexOf(row);
         if (ix !== -1)
             this.rows.splice(ix, 1);
+        this.updateStorage();
+    }
+    private updateStorage() {
+        if (window.localStorage) {
+            window.localStorage.setItem(localStorageKey, JSON.stringify(this.rows.map(r => r.text)));
+        }
     }
 }
