@@ -3,6 +3,7 @@ import { action, observable, computed } from "mobx";
 import { observer, Provider, inject } from "mobx-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition, faCheckSquare, faMinusSquare, faSquare } from "@fortawesome/fontawesome-free-regular";
+import { faTimes } from "@fortawesome/fontawesome-free-solid";
 
 class RowStore {
     @observable readonly rows: TableRow[] = [];
@@ -42,6 +43,23 @@ class RowStore {
         const ix = this.rows.indexOf(row);
         if (ix !== -1)
             this.rows.splice(ix, 1);
+    }
+}
+
+class RowStoreView {
+    @observable readonly store: RowStore;
+    @observable filter: string = "";
+    constructor(store: RowStore) {
+        this.store = store;
+    }
+    @computed get rows(): TableRow[] {
+        return this.store.rows.filter(r => r.text.indexOf(this.filter) > -1);
+    }
+    @computed get selectedLength(): number {
+        return this.rows.reduce((s, r) => s += r.active ? 1 : 0, 0);
+    }
+    @computed get length(): number {
+        return this.rows.length;
     }
 }
 
@@ -101,9 +119,40 @@ class RowForm extends React.Component<{ rowStore?: RowStore }, {}> {
     }
 }
 
+@inject("view")
+@observer
+class ViewFilter extends React.Component<{ view?: RowStoreView }, {}> {
+    @action.bound filterChanged(e: React.FormEvent<HTMLInputElement>) {
+        this.props.view!.filter = e.currentTarget.value;
+    }
+    @action.bound clearFilter() {
+        this.props.view!.filter = "";
+    }
+    render() {
+        return <div className="field has-addons">
+            <div className="control">
+                <input className="input" type="text" placeholder="Filter"
+                    value={this.props.view!.filter} onChange={this.filterChanged} />
+            </div>
+            <div className="control">
+                <button className="button" onClick={this.clearFilter}>
+                    <span className="icon">
+                        <FontAwesomeIcon icon={faTimes} />
+                    </span>
+                </button>
+            </div>
+        </div>;
+    }
+}
+
 @observer
 export default class Main extends React.Component<{}, {}> {
     readonly store = new RowStore();
+    readonly view: RowStoreView;
+    constructor(props: {}, context: any) {
+        super(props, context);
+        this.view = new RowStoreView(this.store);
+    }
     @action.bound removeRow(row: TableRow) {
         this.store.remove(row);
     }
@@ -118,11 +167,12 @@ export default class Main extends React.Component<{}, {}> {
         return <Provider rowStore={this.store}>
             <section className="section">
                 <div className="tabs">
-                <ul>
-                    <li className="is-active"><a>Table test</a></li>
-                </ul>
+                    <ul>
+                        <li className="is-active"><a>Table test</a></li>
+                    </ul>
                 </div>
                 <div>
+                    <ViewFilter view={this.view} />
                     <table className="table is-fullwidth is-striped is-hoverable">
                         <thead>
                             <tr>
@@ -134,11 +184,11 @@ export default class Main extends React.Component<{}, {}> {
                             </tr>
                         </thead>
                         <tbody>{
-                            this.store.rows.map(r => <RowComponent key={r.id} row={r} onDelete={this.removeRow} />)
+                            this.view.rows.map(r => <RowComponent key={r.id} row={r} onDelete={this.removeRow} />)
                         }</tbody>
                     </table>
                     <RowForm />
-                    <div>{this.store.selectedLength} of {this.store.length} selected</div>
+                    <div>{this.view.selectedLength} of {this.view.length} selected</div>
                 </div>
             </section>
         </Provider>;
