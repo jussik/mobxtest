@@ -2,7 +2,7 @@ import * as React from "react";
 import { action } from "mobx";
 import { observer, Provider } from "mobx-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition, faCheckSquare, faMinusSquare, faSquare } from "@fortawesome/fontawesome-free-regular";
+import { IconDefinition, faCheckSquare, faMinusSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
 
 import { RowStore } from "../common/RowStore";
 import { RowStoreView } from "../common/RowStoreView";

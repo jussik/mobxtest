@@ -2,7 +2,7 @@ import * as React from "react";
 import { action } from "mobx";
 import { observer, inject } from "mobx-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/fontawesome-free-solid";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 import { RowStoreView } from "../common/RowStoreView";
 
@@ -17,17 +17,17 @@ export class ViewFilter extends React.Component<{ view?: RowStoreView }, {}> {
     }
     render() {
         return <div className="field has-addons">
-                   <div className="control">
-                       <input className="input" type="text" placeholder="Filter"
-                              value={this.props.view!.filter} onChange={this.filterChanged} />
-                   </div>
-                   <div className="control">
-                       <button className="button" onClick={this.clearFilter}>
-                           <span className="icon">
-                               <FontAwesomeIcon icon={faTimes} />
-                           </span>
-                       </button>
-                   </div>
-               </div>;
+            <div className="control">
+                <input className="input" type="text" placeholder="Filter"
+                    value={this.props.view!.filter} onChange={this.filterChanged} />
+            </div>
+            <div className="control">
+                <button className="button" onClick={this.clearFilter}>
+                    <span className="icon">
+                        <FontAwesomeIcon icon={faTimes} />
+                    </span>
+                </button>
+            </div>
+        </div>;
     }
 }

@@ -18,13 +18,13 @@ export class RowForm extends React.Component<{ rowStore?: RowStore }, {}> {
     }
     render() {
         return <form className="field has-addons" onSubmit={this.submit}>
-                   <div className="control">
-                       <input className="input" type="text" placeholder="Name" required
-                              value={this.name} onChange={this.nameChanged} />
-                   </div>
-                   <div className="control">
-                       <button type="submit" className="button">Add</button>
-                   </div>
-               </form>;
+            <div className="control">
+                <input className="input" type="text" placeholder="Name" required
+                    value={this.name} onChange={this.nameChanged} />
+            </div>
+            <div className="control">
+                <button type="submit" className="button">Add</button>
+            </div>
+        </form>;
     }
 }
