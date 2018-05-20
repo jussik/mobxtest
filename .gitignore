@@ -5,5 +5,4 @@ obj/
 log/
 .vs/
 .cache/
-*.DotSettings.user
-*.csproj.user
+*.user
