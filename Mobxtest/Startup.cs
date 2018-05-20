@@ -20,7 +20,7 @@ namespace Mobxtest
             }
 
 	        app.UseRewriter(new RewriteOptions()
-		        .AddRewrite("^dist/", "$1", true)
+		        .AddRewrite("^dist/.+", "$0", true)
 		        .AddRewrite(".*", "dist/index.html", true));
 			app.UseStaticFiles();
         }
