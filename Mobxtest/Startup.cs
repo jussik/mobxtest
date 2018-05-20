@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mobxtest
@@ -16,7 +17,11 @@ namespace Mobxtest
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-				app.UseWebpackDevMiddleware();
+				app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+				{
+					HotModuleReplacement = true,
+					ReactHotModuleReplacement = true
+				});
             }
 
 	        app.UseRewriter(new RewriteOptions()

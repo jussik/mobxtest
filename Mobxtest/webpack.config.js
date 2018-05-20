@@ -6,6 +6,7 @@ const isProd = process.env.NODE_ENV === "production";
 
 module.exports = {
     mode: isProd ? "production" : "development",
+    entry: { main: ["./src/index"] },
     resolve: {
         extensions: [".ts", ".tsx", ".js"]
     },

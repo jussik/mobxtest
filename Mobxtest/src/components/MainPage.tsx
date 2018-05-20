@@ -1,30 +1,21 @@
+import { hot } from "react-hot-loader";
 import * as React from "react";
 import * as PropTypes from "prop-types";
-import Loadable from "react-loadable";
+import importedComponent from "react-imported-component";
 import { BrowserRouter as Router, Route, Switch, Link, Redirect } from "react-router-dom";
-import { Provider } from "mobx-react";
+import { Provider, observer } from "mobx-react";
 
 import { RowStore } from "../common/RowStore";
 
 const Loading = () => <div>Loading</div>;
-const TableTabAsync = Loadable({
-    loader: () => import('./TableTab'),
-    loading: Loading,
-});
-const OtherTabAsync = Loadable({
-    loader: () => import('./OtherTab'),
-    loading: Loading,
-});
-
-interface TabModule {
-    default: any
-}
+const TableTabAsync = importedComponent(() => import("./TableTab"), { LoadingComponent: Loading });
+const OtherTabAsync = importedComponent(() => import("./OtherTab"), { LoadingComponent: Loading });
 
 class Tab {
     constructor(
         readonly path: string,
         readonly title: string,
-        readonly component: any
+        readonly component: React.ComponentType
     ) { }
 }
 
@@ -51,7 +42,7 @@ class TabHeader extends React.Component<{}, {}> {
     }
 }
 
-export default class MainPage extends React.Component<{}, {}> {
+class MainPage extends React.Component<{}, {}> {
     readonly store = new RowStore();
     render() {
         return <Provider rowStore={this.store}>
@@ -60,7 +51,7 @@ export default class MainPage extends React.Component<{}, {}> {
                     <TabHeader />
                     <Switch>
                         {tabs.map(tab =>
-                            <Route key={tab.path} path={tab.path} component={tab.component} />
+                            <Route key={tab.path} path={tab.path} component={tab.component}/>
                         )}
                         <Redirect to="/table" />
                     </Switch>
@@ -69,3 +60,5 @@ export default class MainPage extends React.Component<{}, {}> {
         </Provider>;
     }
 }
+
+export default hot(module)(MainPage);

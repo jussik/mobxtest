@@ -7,7 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="package.json" />
+    <Content Remove="tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="package.json" />
+    <None Include="tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
