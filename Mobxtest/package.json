@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack-dev-server --mode=development",
-    "build": "rm -rf ./dist && cross-env NODE_ENV=production webpack --mode=production"
+    "build": "rm -rf ./wwwroot/* && cross-env NODE_ENV=production webpack --mode=production"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.0-14",

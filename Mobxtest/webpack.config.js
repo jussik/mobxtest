@@ -1,3 +1,4 @@
+const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
@@ -35,6 +36,7 @@ module.exports = {
         }])
     ],
     output: {
-        filename: "[name].[chunkhash].js"
+        filename: "[name].[chunkhash].js",
+        path: path.resolve(__dirname, "wwwroot")
     }
 };

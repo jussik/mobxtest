@@ -1,5 +1,9 @@
 node_modules/
-dist/
+wwwroot/
+bin/
+obj/
+log/
 .vs/
 .cache/
 *.DotSettings.user
+*.csproj.user

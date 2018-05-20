@@ -8,6 +8,7 @@
     "jsx": "react",
     "experimentalDecorators": true
   },
+  "compileOnSave": false,
   "include": [
     "./src/**/*"
   ]
