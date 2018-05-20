@@ -4,6 +4,7 @@
     "strict": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "target": "esnext",
     "jsx": "react",
     "experimentalDecorators": true

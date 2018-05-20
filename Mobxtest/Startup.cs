@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mobxtest
@@ -18,6 +19,9 @@ namespace Mobxtest
 				app.UseWebpackDevMiddleware();
             }
 
+	        app.UseRewriter(new RewriteOptions()
+		        .AddRewrite("^dist/", "$1", true)
+		        .AddRewrite(".*", "dist/index.html", true));
 			app.UseStaticFiles();
         }
     }

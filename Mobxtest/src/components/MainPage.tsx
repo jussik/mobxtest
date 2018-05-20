@@ -1,61 +1,71 @@
 import * as React from "react";
-import { observable, action } from "mobx";
-import { observer, Provider } from "mobx-react";
+import * as PropTypes from "prop-types";
+import Loadable from "react-loadable";
+import { BrowserRouter as Router, Route, Switch, Link, Redirect } from "react-router-dom";
+import { Provider } from "mobx-react";
 
 import { RowStore } from "../common/RowStore";
+
+const Loading = () => <div>Loading</div>;
+const TableTabAsync = Loadable({
+    loader: () => import('./TableTab'),
+    loading: Loading,
+});
+const OtherTabAsync = Loadable({
+    loader: () => import('./OtherTab'),
+    loading: Loading,
+});
 
 interface TabModule {
     default: any
 }
 
 class Tab {
-    @observable component: any = null;
     constructor(
+        readonly path: string,
         readonly title: string,
-        readonly moduleFetcher: () => Promise<TabModule>
+        readonly component: any
     ) { }
-    @action.bound private moduleLoaded(mod: TabModule) {
-        this.component = mod.default;
+}
+
+const tabs = [
+    new Tab("/table", "Table test", TableTabAsync),
+    new Tab("/other", "Other", OtherTabAsync)
+];
+
+class TabHeader extends React.Component<{}, {}> {
+    static contextTypes = {
+        router: PropTypes.object.isRequired
     }
-    load() {
-        if (this.component == null) {
-            this.moduleFetcher().then(this.moduleLoaded);
-        }
+    render() {
+        const currentTab = this.context.router.route.location.pathname;
+        return <div className="tabs">
+            <ul>
+                {tabs.map(tab =>
+                    <li key={tab.path} className={currentTab === tab.path ? "is-active" : ""}>
+                        <Link to={tab.path}>{tab.title}</Link>
+                    </li>
+                )}
+            </ul>
+        </div>;
     }
 }
 
-@observer
 export default class MainPage extends React.Component<{}, {}> {
     readonly store = new RowStore();
-    private readonly tabs = [
-        new Tab("Table test", () => import("./TableTab")),
-        new Tab("Other", () => import("./OtherTab"))
-    ];
-    @observable private currentTab: Tab;
-
-    constructor(props: {}, context: any) {
-        super(props, context);
-        this.currentTab = this.tabs[0];
-        this.currentTab.load();
-    }
-    @action.bound private setTab(tab: Tab) {
-        this.currentTab = tab;
-        tab.load();
-    }
     render() {
-        const tab = this.currentTab;
-        const tabHeaders = this.tabs.map((t, i) =>
-            <li key={i} className={tab === t ? "is-active" : ""} onClick={() => this.setTab(t)}>
-                <a>{t.title}</a>
-            </li>);
-
         return <Provider rowStore={this.store}>
-            <section className="section">
-                <div className="tabs">
-                    <ul>{tabHeaders}</ul>
-                </div>
-                {tab.component ? React.createElement(tab.component) : <span>Loading...</span>}
-            </section>
+            <Router>
+                <section className="section">
+                    <TabHeader />
+                    <Switch>
+                        {tabs.map(tab =>
+                            <Route key={tab.path} path={tab.path} component={tab.component} />
+                        )}
+                        <Redirect to="/table" />
+                    </Switch>
+                </section>
+            </Router>
         </Provider>;
     }
 }
